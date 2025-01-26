@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alt1 Screen Capture to Discord</title>
+  <!-- Include Tesseract.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.0.0-beta.3/dist/tesseract.min.js"></script>
   <script src="https://alt1.toolkit.js"></script>
   <style>
     body {
@@ -38,6 +40,7 @@
     // Webhook URL (replace with your Discord webhook URL)
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1328296698551992372/j9un2m8Ro5JLHfC95227yl1slij2TXX_SqnhrHsrpAiH7F2rEksOSH6yUxV2TRGyoSP6";
 
+    // Adding an async function to handle the capture and processing flow
     document.getElementById("captureBtn").addEventListener("click", async () => {
       const status = document.getElementById("status");
       status.textContent = "Capturing screen region...";
@@ -54,20 +57,26 @@
       const img = alt1.capture.area(rewardRegion.x, rewardRegion.y, rewardRegion.width, rewardRegion.height);
 
       if (img) {
-        // Extract text using OCR
-        const text = alt1.ocr.readRegion(img);
-        console.log("Detected text:", text);
+        try {
+          // Extract text using Tesseract.js OCR
+          const { data: { text } } = await Tesseract.recognize(
+            img, // the image to process
+            'eng', // language to use (English in this case)
+            {
+              logger: (m) => console.log(m), // Logs the OCR process
+            }
+          );
 
-        if (text.includes("CURRENT REWARD VALUE")) {
-          console.log("Reward interface detected!");
-          status.textContent = "Reward interface detected! Sending to Discord...";
+          console.log("Detected text:", text);
 
-          // Convert image to Base64
-          const imgBase64 = alt1.util.imageToBase64(img);
+          if (text.includes("CURRENT REWARD VALUE")) {
+            console.log("Reward interface detected!");
+            status.textContent = "Reward interface detected! Sending to Discord...";
 
-          // Send the image to Discord
-          try {
-            // Convert Base64 to a Blob (for file upload)
+            // Convert image to Base64
+            const imgBase64 = alt1.util.imageToBase64(img);
+
+            // Send the image to Discord
             const blob = await (await fetch(imgBase64)).blob();
             const formData = new FormData();
             formData.append("file", blob, "screenshot.png");
@@ -84,12 +93,12 @@
               status.textContent = `Failed to send image: ${response.statusText}`;
               console.error("Discord error:", await response.text());
             }
-          } catch (error) {
-            status.textContent = "An error occurred.";
-            console.error("Error:", error);
+          } else {
+            status.textContent = "Reward interface not detected.";
           }
-        } else {
-          status.textContent = "Reward interface not detected.";
+        } catch (error) {
+          status.textContent = "OCR failed or error occurred.";
+          console.error("OCR error:", error);
         }
       } else {
         status.textContent = "Failed to capture screen region.";
