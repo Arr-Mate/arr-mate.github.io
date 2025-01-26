@@ -1,10 +1,24 @@
 {
-  "name": "Screen Capture to Discord",
+  "name": "Alt1 Screen Capture to Discord",
+  "description": "A tool to capture a screen region, extract text using OCR, and send it to Discord.",
   "version": "1.0.0",
-  "appUrl": "https://arr-mate.github.io/index.html",
-  "configUrl": "https://arr-mate.github.io/appconfig.json",
-  "entry": "index.html",
-  "permissions": ["pixel", "network"],
-  "icon": "icon.png",
-  "category": "utility"
+  "homepage": "https://your-github-io-url.github.io", 
+  "icon": "https://your-github-io-url.github.io/icon.png",
+  "app": {
+    "type": "standalone",
+    "width": 800,
+    "height": 600,
+    "resizable": true
+  },
+  "features": [
+    "pixel",
+    "imagecapture"
+  ],
+  "overrideWebPermissions": {
+    "pixel": true
+  },
+  "categories": ["utility", "discord"],
+  "custom": {
+    "developer": "Your Name or Organization"
+  }
 }
