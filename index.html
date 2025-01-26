@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alt1 Screen Capture to Discord</title>
+  <script src="https://alt1.toolkit.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005a9e;
+    }
+    #status {
+      margin-top: 10px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Alt1 Screen Capture to Discord</h1>
+  <p>Click the button below to capture a region of the screen and send it to a Discord channel.</p>
+  <button id="captureBtn">Capture & Send to Discord</button>
+  <p id="status"></p>
+
+  <script>
+    // Webhook URL (replace with your Discord webhook URL)
+    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1328296698551992372/j9un2m8Ro5JLHfC95227yl1slij2TXX_SqnhrHsrpAiH7F2rEksOSH6yUxV2TRGyoSP6";
+
+    document.getElementById("captureBtn").addEventListener("click", async () => {
+      const status = document.getElementById("status");
+      status.textContent = "Capturing screen region...";
+
+      // Ensure Alt1 permissions are enabled
+      if (!alt1.permissionPixel) {
+        alert("Alt1 permission for screen reading is required!");
+        status.textContent = "Permission denied.";
+        return;
+      }
+
+      // Define the screen region to capture (adjust x, y, width, height as needed)
+      const rewardRegion = { x: 500, y: 300, width: 400, height: 200 }; // Example region
+      const img = alt1.capture.area(rewardRegion.x, rewardRegion.y, rewardRegion.width, rewardRegion.height);
+
+      if (img) {
+        // Extract text using OCR
+        const text = alt1.ocr.readRegion(img);
+        console.log("Detected text:", text);
+
+        if (text.includes("CURRENT REWARD VALUE")) {
+          console.log("Reward interface detected!");
+          status.textContent = "Reward interface detected! Sending to Discord...";
+
+          // Convert image to Base64
+          const imgBase64 = alt1.util.imageToBase64(img);
+
+          // Send the image to Discord
+          try {
+            // Convert Base64 to a Blob (for file upload)
+            const blob = await (await fetch(imgBase64)).blob();
+            const formData = new FormData();
+            formData.append("file", blob, "screenshot.png");
+
+            // Post to Discord Webhook
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              status.textContent = "Image sent successfully!";
+            } else {
+              status.textContent = `Failed to send image: ${response.statusText}`;
+              console.error("Discord error:", await response.text());
+            }
+          } catch (error) {
+            status.textContent = "An error occurred.";
+            console.error("Error:", error);
+          }
+        } else {
+          status.textContent = "Reward interface not detected.";
+        }
+      } else {
+        status.textContent = "Failed to capture screen region.";
+      }
+    });
+  </script>
+</body>
+</html>
