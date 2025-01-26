@@ -2,8 +2,7 @@
   "name": "Alt1 Screen Capture to Discord",
   "description": "A tool to capture a screen region, extract text using OCR, and send it to Discord.",
   "version": "1.0.0",
-  "homepage": "https://your-github-io-url.github.io", 
-  "icon": "https://your-github-io-url.github.io/icon.png",
+  "homepage": "https://your-github-io-url.github.io",
   "app": {
     "type": "standalone",
     "width": 800,
