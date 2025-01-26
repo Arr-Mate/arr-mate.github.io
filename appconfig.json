@@ -1,8 +1,8 @@
 {
   "name": "Screen Capture to Discord",
   "version": "1.0.0",
-  "appUrl": "index.html",
-  "configUrl": "appconfig.json",
+  "appUrl": "https://arr-mate.github.io/index.html",
+  "configUrl": "https://arr-mate.github.io/appconfig.json",
   "entry": "index.html",
   "permissions": ["pixel", "network"],
   "icon": "icon.png",
