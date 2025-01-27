@@ -1,0 +1,8 @@
+{
+  "name": "Alt1 Region Selector",
+  "version": "1.0.0",
+  "defaultcolor": "#ff0000",
+  "app": "browser",
+  "type": "browser",
+  "url": "https://arr-mate.github.io" // Replace with your app's URL
+}
